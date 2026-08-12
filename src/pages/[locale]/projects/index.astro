@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import {
+  getLocale,
+  getLocaleStaticPaths,
+  getStatusLabel,
+  getTranslations,
+  localizedPath,
+} from '../../../i18n';
+import { filterByLocale, getContentSlug } from '../../../utils/content';
+import { formatDateShort, sortByDateDesc, filterPublished } from '../../../utils/date';
+
+export function getStaticPaths() {
+  return getLocaleStaticPaths();
+}
+
+const locale = getLocale(Astro.params.locale);
+const t = getTranslations(locale);
+
+const allProjects = filterPublished(await getCollection('projects'));
+const projects = sortByDateDesc(filterByLocale(allProjects, locale));
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.projectsTitle}
+  description={t.meta.projectsDescription}
+  canonical={localizedPath(locale, '/projects')}
+>
+  <header class="page-header container">
+    <p class="label">{t.projects.label}</p>
+    <h1 class="page-header__title">{t.projects.title}</h1>
+    <p class="page-header__desc">{t.projects.description}</p>
+  </header>
+
+  <div class="container">
+    <ul class="archive-list">
+      {
+        projects.map((project) => (
+          <li class="archive-list__item">
+            <div class="archive-list__header">
+              <h2 class="archive-list__title">
+                <a href={localizedPath(locale, `/projects/${getContentSlug(project.id)}`)}>
+                  {project.data.title}
+                </a>
+              </h2>
+              <time class="archive-list__date" datetime={project.data.date.toISOString()}>
+                {formatDateShort(project.data.date, locale)}
+              </time>
+            </div>
+            <p class="archive-list__desc">{project.data.description}</p>
+            <ul class="tag-list">
+              {project.data.technologies.map((tech) => (
+                <li class="tag">{tech}</li>
+              ))}
+            </ul>
+            <span class={`status status--${project.data.status}`}>
+              {getStatusLabel(t, project.data.status)}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>

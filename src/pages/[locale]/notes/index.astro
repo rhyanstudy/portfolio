@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { getLocale, getLocaleStaticPaths, getTranslations, localizedPath } from '../../../i18n';
+import { filterByLocale, getContentSlug } from '../../../utils/content';
+import { formatDateShort, sortByDateDesc, filterPublished } from '../../../utils/date';
+
+export function getStaticPaths() {
+  return getLocaleStaticPaths();
+}
+
+const locale = getLocale(Astro.params.locale);
+const t = getTranslations(locale);
+
+const allArticles = filterPublished(await getCollection('articles'));
+const articles = sortByDateDesc(filterByLocale(allArticles, locale));
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.notesTitle}
+  description={t.meta.notesDescription}
+  canonical={localizedPath(locale, '/notes')}
+>
+  <header class="page-header container">
+    <p class="label">{t.notes.label}</p>
+    <h1 class="page-header__title">{t.notes.title}</h1>
+    <p class="page-header__desc">{t.notes.description}</p>
+  </header>
+
+  <div class="container">
+    <ul class="article-list">
+      {
+        articles.map((article) => (
+          <li class="article-list__item">
+            <time class="article-list__date" datetime={article.data.date.toISOString()}>
+              {formatDateShort(article.data.date, locale)}
+            </time>
+            <span class="article-list__category">{article.data.category}</span>
+            <h2 class="article-list__title">
+              <a href={localizedPath(locale, `/notes/${getContentSlug(article.id)}`)}>
+                {article.data.title}
+              </a>
+            </h2>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>

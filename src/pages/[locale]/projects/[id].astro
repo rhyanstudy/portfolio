@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../../config/site';
+import { getCollection, render } from 'astro:content';
+import {
+  getLocale,
+  getStatusLabel,
+  getTranslations,
+  localizedPath,
+  locales,
+} from '../../../i18n';
+import { buildContentAlternates, findLocalizedEntry, getContentSlug } from '../../../utils/content';
+import { formatDate } from '../../../utils/date';
+
+export async function getStaticPaths() {
+  const allProjects = await getCollection('projects', ({ data }) => !data.draft);
+  const slugs = [...new Set(allProjects.map((project) => getContentSlug(project.id)))];
+  const paths = [];
+
+  for (const locale of locales) {
+    for (const slug of slugs) {
+      const entry = findLocalizedEntry(allProjects, slug, locale);
+      if (entry) {
+        paths.push({
+          params: { locale, id: slug },
+          props: { project: entry, slug },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const locale = getLocale(Astro.params.locale);
+const { project, slug } = Astro.props;
+const t = getTranslations(locale);
+const { Content } = await render(project);
+const { data } = project;
+
+const allProjects = await getCollection('projects', ({ data: itemData }) => !itemData.draft);
+const alternates = buildContentAlternates(allProjects, slug, 'projects');
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${data.title} — ${siteConfig.name}`}
+  description={data.description}
+  canonical={localizedPath(locale, `/projects/${slug}`)}
+  ogType="article"
+  alternates={alternates}
+>
+  <article class="container">
+    <header class="page-header">
+      <p class="label">{t.projectDetail.label}</p>
+      <h1 class="page-header__title">{data.title}</h1>
+      <p class="page-header__desc">{data.description}</p>
+
+      <ul class="meta-list">
+        <li>
+          <strong>{t.projectDetail.date}</strong>
+          <time datetime={data.date.toISOString()}>{formatDate(data.date, locale)}</time>
+        </li>
+        <li>
+          <strong>{t.projectDetail.role}</strong>
+          {data.role}
+        </li>
+        <li>
+          <strong>{t.projectDetail.status}</strong>
+          <span class={`status status--${data.status}`}>
+            {getStatusLabel(t, data.status)}
+          </span>
+        </li>
+      </ul>
+
+      <ul class="tag-list">
+        {data.technologies.map((tech) => (
+          <li class="tag">{tech}</li>
+        ))}
+      </ul>
+
+      {
+        (data.github || data.demo) && (
+          <div class="link-row">
+            {data.github && (
+              <a href={data.github} rel="noopener noreferrer" target="_blank">
+                {t.projectDetail.viewGithub}
+              </a>
+            )}
+            {data.demo && (
+              <a href={data.demo} rel="noopener noreferrer" target="_blank">
+                {t.projectDetail.liveDemo}
+              </a>
+            )}
+          </div>
+        )
+      }
+    </header>
+
+    <div class="container--narrow case-study">
+      {
+        data.context && (
+          <section>
+            <h2>{t.projectDetail.context}</h2>
+            <p>{data.context}</p>
+          </section>
+        )
+      }
+
+      <section>
+        <h2>{t.projectDetail.problem}</h2>
+        <p>{data.problem}</p>
+      </section>
+
+      <section>
+        <h2>{t.projectDetail.solution}</h2>
+        <p>{data.solution}</p>
+      </section>
+
+      {
+        data.technicalDecisions && data.technicalDecisions.length > 0 && (
+          <section>
+            <h2>{t.projectDetail.technicalDecisions}</h2>
+            <ul>
+              {data.technicalDecisions.map((decision) => (
+                <li>{decision}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <section>
+        <h2>{t.projectDetail.technicalImplementation}</h2>
+        <div class="prose">
+          <Content />
+        </div>
+      </section>
+
+      {
+        data.challenges && data.challenges.length > 0 && (
+          <section>
+            <h2>{t.projectDetail.challenges}</h2>
+            <ul>
+              {data.challenges.map((challenge) => (
+                <li>{challenge}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        data.learnings && data.learnings.length > 0 && (
+          <section>
+            <h2>{t.projectDetail.learnings}</h2>
+            <ul>
+              {data.learnings.map((learning) => (
+                <li>{learning}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        data.results && data.results.length > 0 && (
+          <section>
+            <h2>{t.projectDetail.results}</h2>
+            <ul>
+              {data.results.map((result) => (
+                <li>{result}</li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+
+    <p class="container mt-lg mb-lg">
+      <a href={localizedPath(locale, '/projects')}>{t.projectDetail.backToProjects}</a>
+    </p>
+  </article>
+</BaseLayout>

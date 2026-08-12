@@ -1,0 +1,203 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../config/site';
+import { getCollection } from 'astro:content';
+import {
+  getLocale,
+  getLocaleStaticPaths,
+  getStatusLabel,
+  getTranslations,
+  localizedPath,
+} from '../../i18n';
+import { filterByLocale, getContentSlug } from '../../utils/content';
+import { formatDateShort, sortByDateDesc, filterPublished } from '../../utils/date';
+
+export function getStaticPaths() {
+  return getLocaleStaticPaths();
+}
+
+const locale = getLocale(Astro.params.locale);
+const t = getTranslations(locale);
+
+const allProjects = filterPublished(await getCollection('projects'));
+const allArticles = filterPublished(await getCollection('articles'));
+const projects = sortByDateDesc(filterByLocale(allProjects, locale));
+const articles = sortByDateDesc(filterByLocale(allArticles, locale));
+
+const featuredProject = projects.find((p) => p.data.featured) ?? projects[0];
+const recentProjects = projects.filter((p) => p.id !== featuredProject?.id).slice(0, 4);
+const recentArticles = articles.slice(0, 3);
+
+const latestExperience = t.site.experience[0];
+const latestEducation = t.site.education[0];
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.homeTitle}
+  description={t.meta.homeDescription}
+  canonical={localizedPath(locale)}
+>
+  <section class="hero container">
+    <p class="label">{t.site.label}</p>
+    <h1 class="hero__headline">{t.site.headline}</h1>
+    <p class="hero__intro">{t.site.intro}</p>
+    <div class="link-row">
+      <a href={localizedPath(locale, '/contact')} class="btn btn--accent">{t.home.getInTouch}</a>
+      <a href={siteConfig.github} rel="noopener noreferrer" target="_blank">GitHub</a>
+      <a href={siteConfig.linkedin} rel="noopener noreferrer" target="_blank">LinkedIn</a>
+    </div>
+  </section>
+
+  {
+    featuredProject && (
+      <section class="section container" aria-labelledby="featured-heading">
+        <h2 id="featured-heading" class="section-label">{t.home.featuredProject}</h2>
+        <article class="featured-project">
+          <div class="featured-project__meta">
+            <time datetime={featuredProject.data.date.toISOString()}>
+              {formatDateShort(featuredProject.data.date, locale)}
+            </time>
+            <p>{featuredProject.data.role}</p>
+            <span class={`status status--${featuredProject.data.status}`}>
+              {getStatusLabel(t, featuredProject.data.status)}
+            </span>
+          </div>
+          <div>
+            <h3 class="featured-project__title">
+              <a href={localizedPath(locale, `/projects/${getContentSlug(featuredProject.id)}`)}>
+                {featuredProject.data.title}
+              </a>
+            </h3>
+            <p class="featured-project__desc">{featuredProject.data.description}</p>
+            <ul class="tag-list">
+              {featuredProject.data.technologies.slice(0, 5).map((tech) => (
+                <li class="tag">{tech}</li>
+              ))}
+            </ul>
+            <p class="mt-lg">
+              <a href={localizedPath(locale, `/projects/${getContentSlug(featuredProject.id)}`)}>
+                {t.home.readCaseStudy}
+              </a>
+            </p>
+          </div>
+        </article>
+      </section>
+    )
+  }
+
+  {
+    recentProjects.length > 0 && (
+      <section class="section container" aria-labelledby="projects-heading">
+        <h2 id="projects-heading" class="section-label">{t.home.recentProjects}</h2>
+        <div class="project-grid">
+          {recentProjects.map((project) => (
+            <article class="project-grid__item">
+              <time class="project-grid__date" datetime={project.data.date.toISOString()}>
+                {formatDateShort(project.data.date, locale)}
+              </time>
+              <h3 class="project-grid__title">
+                <a href={localizedPath(locale, `/projects/${getContentSlug(project.id)}`)}>
+                  {project.data.title}
+                </a>
+              </h3>
+              <p class="project-grid__desc">{project.data.description}</p>
+            </article>
+          ))}
+        </div>
+        <p class="mt-lg">
+          <a href={localizedPath(locale, '/projects')}>{t.home.viewAllProjects}</a>
+        </p>
+      </section>
+    )
+  }
+
+  <section class="section container" aria-labelledby="tech-heading">
+    <h2 id="tech-heading" class="section-label">{t.home.technicalProfile}</h2>
+    <div class="tech-profile">
+      <div class="tech-profile__group">
+        <h3>{t.home.languages}</h3>
+        <ul class="tech-profile__list">
+          {t.site.technologies.languages.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="tech-profile__group">
+        <h3>{t.home.backend}</h3>
+        <ul class="tech-profile__list">
+          {t.site.technologies.backend.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="tech-profile__group">
+        <h3>{t.home.frontend}</h3>
+        <ul class="tech-profile__list">
+          {t.site.technologies.frontend.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="tech-profile__group">
+        <h3>{t.home.toolsAndPractices}</h3>
+        <ul class="tech-profile__list">
+          {[...t.site.technologies.tools, ...t.site.technologies.practices].map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {
+    recentArticles.length > 0 && (
+      <section class="section container" aria-labelledby="notes-heading">
+        <h2 id="notes-heading" class="section-label">{t.home.latestNotes}</h2>
+        <ul class="article-list">
+          {recentArticles.map((article) => (
+            <li class="article-list__item">
+              <time class="article-list__date" datetime={article.data.date.toISOString()}>
+                {formatDateShort(article.data.date, locale)}
+              </time>
+              <span class="article-list__category">{article.data.category}</span>
+              <h3 class="article-list__title">
+                <a href={localizedPath(locale, `/notes/${getContentSlug(article.id)}`)}>
+                  {article.data.title}
+                </a>
+              </h3>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-lg">
+          <a href={localizedPath(locale, '/notes')}>{t.home.allNotes}</a>
+        </p>
+      </section>
+    )
+  }
+
+  <section class="section container" aria-labelledby="summary-heading">
+    <h2 id="summary-heading" class="section-label">{t.home.experienceEducation}</h2>
+    {
+      latestExperience && (
+        <article class="timeline__item" style="border-top: 1px solid var(--color-border-light);">
+          <div class="timeline__header">
+            <h3 class="timeline__title">{latestExperience.title}</h3>
+            <span class="timeline__period">{latestExperience.period}</span>
+          </div>
+          <p class="timeline__company">
+            {latestExperience.company} · {latestExperience.location}
+          </p>
+          <p class="timeline__summary">{latestExperience.summary}</p>
+        </article>
+      )
+    }
+    {
+      latestEducation && (
+        <article class="education-list__item">
+          <h3 class="education-list__degree">{latestEducation.degree}</h3>
+          <p class="education-list__institution">
+            {latestEducation.institution} · {latestEducation.period}
+          </p>
+        </article>
+      )
+    }
+    <p class="mt-lg">
+      <a href={localizedPath(locale, '/experience')}>{t.home.fullExperience}</a>
+    </p>
+  </section>
+</BaseLayout>

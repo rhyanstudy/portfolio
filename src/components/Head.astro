@@ -1,0 +1,62 @@
+---
+import {
+  getTranslations,
+  locales,
+  localizedPath,
+  stripLocaleFromPath,
+  type Locale,
+} from '../i18n';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogType?: string;
+  alternates?: Partial<Record<Locale, string>>;
+}
+
+const { locale, title, description, canonical, ogType = 'website', alternates } = Astro.props;
+const t = getTranslations(locale);
+const siteUrl = Astro.site?.href ?? 'https://example.com';
+const canonicalPath = canonical ?? Astro.url.pathname;
+const canonicalUrl = new URL(canonicalPath, siteUrl).href;
+
+const hreflangLinks = locales.map((loc) => {
+  const path = alternates?.[loc] ?? localizedPath(loc, stripLocaleFromPath(canonicalPath));
+  return {
+    hreflang: loc === 'pt-br' ? 'pt-BR' : 'en',
+    href: new URL(path, siteUrl).href,
+  };
+});
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" href="/favicon.ico" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{title}</title>
+{description && <meta name="description" content={description} />}
+
+<link rel="canonical" href={canonicalUrl} />
+
+{hreflangLinks.map((link) => (
+  <link rel="alternate" hreflang={link.hreflang} href={link.href} />
+))}
+<link
+  rel="alternate"
+  hreflang="x-default"
+  href={new URL(localizedPath('en', stripLocaleFromPath(canonicalPath)), siteUrl).href}
+/>
+
+<meta property="og:title" content={title} />
+{description && <meta property="og:description" content={description} />}
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:locale" content={t.ogLocale} />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={title} />
+{description && <meta name="twitter:description" content={description} />}

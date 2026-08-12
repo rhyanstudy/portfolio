@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../config/site';
+import { getLocale, getLocaleStaticPaths, getTranslations, localizedPath } from '../../i18n';
+
+export function getStaticPaths() {
+  return getLocaleStaticPaths();
+}
+
+const locale = getLocale(Astro.params.locale);
+const t = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.contactTitle}
+  description={t.meta.contactDescription}
+  canonical={localizedPath(locale, '/contact')}
+>
+  <header class="page-header container">
+    <p class="label">{t.contact.label}</p>
+    <h1 class="page-header__title">{t.contact.title}</h1>
+    <p class="page-header__desc">{t.contact.description}</p>
+  </header>
+
+  <div class="container container--narrow">
+    <div class="contact-grid">
+      <div class="contact-item">
+        <h3>{t.contact.email}</h3>
+        <p>
+          <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
+        </p>
+      </div>
+
+      <div class="contact-item">
+        <h3>{t.contact.github}</h3>
+        <p>
+          <a href={siteConfig.github} rel="noopener noreferrer" target="_blank">
+            {siteConfig.github.replace('https://', '')}
+          </a>
+        </p>
+      </div>
+
+      <div class="contact-item">
+        <h3>{t.contact.linkedin}</h3>
+        <p>
+          <a href={siteConfig.linkedin} rel="noopener noreferrer" target="_blank">
+            {siteConfig.linkedin.replace('https://', '')}
+          </a>
+        </p>
+      </div>
+
+      <div class="contact-item">
+        <h3>{t.contact.cv}</h3>
+        <p>
+          <a href={siteConfig.cvPath} download>{t.contact.downloadCv}</a>
+        </p>
+      </div>
+    </div>
+
+    <hr class="mt-lg" />
+
+    <section class="prose">
+      <h2>{t.contact.availability}</h2>
+      <p>{t.contact.availabilityText}</p>
+    </section>
+  </div>
+</BaseLayout>

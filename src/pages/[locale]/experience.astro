@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../config/site';
+import { getLocale, getLocaleStaticPaths, getTranslations, localizedPath } from '../../i18n';
+
+export function getStaticPaths() {
+  return getLocaleStaticPaths();
+}
+
+const locale = getLocale(Astro.params.locale);
+const t = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.experienceTitle}
+  description={t.meta.experienceDescription}
+  canonical={localizedPath(locale, '/experience')}
+>
+  <header class="page-header container">
+    <p class="label">{t.experience.label}</p>
+    <h1 class="page-header__title">{t.experience.title}</h1>
+    <p class="page-header__desc">{t.experience.description}</p>
+    <div class="link-row">
+      <a href={siteConfig.cvPath} class="btn btn--accent" download>
+        {t.experience.downloadCv}
+      </a>
+    </div>
+  </header>
+
+  <div class="container container--narrow">
+    <section class="section" aria-labelledby="experience-heading">
+      <h2 id="experience-heading" class="section-label">{t.experience.professionalExperience}</h2>
+      <ul class="timeline">
+        {
+          t.site.experience.map((item) => (
+            <li class="timeline__item">
+              <div class="timeline__header">
+                <h3 class="timeline__title">{item.title}</h3>
+                <span class="timeline__period">{item.period}</span>
+              </div>
+              <p class="timeline__company">
+                {item.company} · {item.location}
+              </p>
+              <p class="timeline__summary">{item.summary}</p>
+              <ul class="timeline__highlights">
+                {item.highlights.map((highlight) => (
+                  <li>{highlight}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="education-heading">
+      <h2 id="education-heading" class="section-label">{t.experience.education}</h2>
+      <ul class="education-list">
+        {
+          t.site.education.map((item) => (
+            <li class="education-list__item">
+              <h3 class="education-list__degree">{item.degree}</h3>
+              <p class="education-list__institution">
+                {item.institution} · {item.location} · {item.period}
+              </p>
+              <p class="education-list__details">{item.details}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="skills-heading">
+      <h2 id="skills-heading" class="section-label">{t.experience.technicalProfile}</h2>
+      <div class="tech-profile">
+        <div class="tech-profile__group">
+          <h3>{t.experience.languages}</h3>
+          <ul class="tech-profile__list">
+            {t.site.technologies.languages.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div class="tech-profile__group">
+          <h3>{t.experience.backend}</h3>
+          <ul class="tech-profile__list">
+            {t.site.technologies.backend.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div class="tech-profile__group">
+          <h3>{t.experience.frontend}</h3>
+          <ul class="tech-profile__list">
+            {t.site.technologies.frontend.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+        <div class="tech-profile__group">
+          <h3>{t.experience.toolsAndPractices}</h3>
+          <ul class="tech-profile__list">
+            {[...t.site.technologies.tools, ...t.site.technologies.practices].map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

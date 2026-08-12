@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLocale, getLocaleStaticPaths, getTranslations, localizedPath } from '../../i18n';
+
+export function getStaticPaths() {
+  return getLocaleStaticPaths();
+}
+
+const locale = getLocale(Astro.params.locale);
+const t = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={t.meta.aboutTitle}
+  description={t.meta.aboutDescription}
+  canonical={localizedPath(locale, '/about')}
+>
+  <header class="page-header container">
+    <p class="label">{t.about.label}</p>
+    <h1 class="page-header__title">{t.about.title}</h1>
+    <p class="page-header__desc">{t.about.description}</p>
+  </header>
+
+  <div class="container container--narrow prose">
+    <section>
+      <h2>{t.about.background}</h2>
+      <p>{t.site.about.whoIAm}</p>
+    </section>
+
+    <section>
+      <h2>{t.about.currentFocus}</h2>
+      <p>{t.site.about.currentFocus}</p>
+    </section>
+
+    <section>
+      <h2>{t.about.careerObjective}</h2>
+      <p>{t.site.about.careerObjective}</p>
+    </section>
+
+    <hr />
+
+    <section>
+      <h2>{t.about.education}</h2>
+      <ul class="education-list">
+        {
+          t.site.education.map((item) => (
+            <li class="education-list__item">
+              <h3 class="education-list__degree">{item.degree}</h3>
+              <p class="education-list__institution">
+                {item.institution} · {item.location} · {item.period}
+              </p>
+              <p class="education-list__details">{item.details}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2>{t.about.professionalBackground}</h2>
+      <ul class="timeline">
+        {
+          t.site.experience.map((item) => (
+            <li class="timeline__item">
+              <div class="timeline__header">
+                <h3 class="timeline__title">{item.title}</h3>
+                <span class="timeline__period">{item.period}</span>
+              </div>
+              <p class="timeline__company">
+                {item.company} · {item.location}
+              </p>
+              <p class="timeline__summary">{item.summary}</p>
+              <ul class="timeline__highlights">
+                {item.highlights.map((highlight) => (
+                  <li>{highlight}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <div class="link-row mt-lg">
+      <a href={localizedPath(locale, '/projects')} class="btn">{t.about.viewProjects}</a>
+      <a href={localizedPath(locale, '/contact')} class="btn btn--accent">{t.about.contact}</a>
+    </div>
+  </div>
+</BaseLayout>

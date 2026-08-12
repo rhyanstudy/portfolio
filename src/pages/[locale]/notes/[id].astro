@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../../config/site';
+import { getCollection, render } from 'astro:content';
+import { getLocale, getTranslations, localizedPath, locales } from '../../../i18n';
+import { buildContentAlternates, findLocalizedEntry, getContentSlug } from '../../../utils/content';
+import { formatDate } from '../../../utils/date';
+
+export async function getStaticPaths() {
+  const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+  const slugs = [...new Set(allArticles.map((article) => getContentSlug(article.id)))];
+  const paths = [];
+
+  for (const locale of locales) {
+    for (const slug of slugs) {
+      const entry = findLocalizedEntry(allArticles, slug, locale);
+      if (entry) {
+        paths.push({
+          params: { locale, id: slug },
+          props: { article: entry, slug },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const locale = getLocale(Astro.params.locale);
+const { article, slug } = Astro.props;
+const t = getTranslations(locale);
+const { Content } = await render(article);
+const { data } = article;
+
+const allArticles = await getCollection('articles', ({ data: itemData }) => !itemData.draft);
+const alternates = buildContentAlternates(allArticles, slug, 'notes');
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${data.title} — ${siteConfig.name}`}
+  description={data.description}
+  canonical={localizedPath(locale, `/notes/${slug}`)}
+  ogType="article"
+  alternates={alternates}
+>
+  <article class="container">
+    <header class="page-header">
+      <p class="label">{data.category}</p>
+      <h1 class="page-header__title">{data.title}</h1>
+      <p class="page-header__desc">{data.description}</p>
+      <ul class="meta-list">
+        <li>
+          <strong>{t.articleDetail.published}</strong>
+          <time datetime={data.date.toISOString()}>{formatDate(data.date, locale)}</time>
+        </li>
+        <li>
+          <strong>{t.articleDetail.category}</strong>
+          {data.category}
+        </li>
+      </ul>
+    </header>
+
+    <div class="container--narrow prose">
+      <Content />
+    </div>
+
+    <p class="container mt-lg mb-lg">
+      <a href={localizedPath(locale, '/notes')}>{t.articleDetail.backToNotes}</a>
+    </p>
+  </article>
+</BaseLayout>

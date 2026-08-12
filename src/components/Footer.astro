@@ -1,0 +1,38 @@
+---
+import { siteConfig } from '../config/site';
+import { getTranslations, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <ul class="site-footer__links">
+      <li>
+        <a href={siteConfig.github} rel="noopener noreferrer" target="_blank">
+          {t.footer.github}
+        </a>
+      </li>
+      <li>
+        <a href={siteConfig.linkedin} rel="noopener noreferrer" target="_blank">
+          {t.footer.linkedin}
+        </a>
+      </li>
+      <li>
+        <a href={`mailto:${siteConfig.email}`}>{t.footer.email}</a>
+      </li>
+      <li>
+        <a href={siteConfig.cvPath} download>{t.footer.cv}</a>
+      </li>
+    </ul>
+    <p class="site-footer__copy">
+      © {year} {siteConfig.name}. {t.footer.rights}
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,40 @@
+---
+import Head from '../components/Head.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getTranslations, type Locale } from '../i18n';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogType?: string;
+  alternates?: Partial<Record<Locale, string>>;
+}
+
+const { locale, title, description, canonical, ogType, alternates } = Astro.props;
+const t = getTranslations(locale);
+---
+
+<!doctype html>
+<html lang={t.htmlLang}>
+  <head>
+    <Head
+      locale={locale}
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogType={ogType}
+      alternates={alternates}
+    />
+  </head>
+  <body>
+    <Header locale={locale} alternates={alternates} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>
