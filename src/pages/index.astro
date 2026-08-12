@@ -1,3 +1,6 @@
 ---
-return Astro.redirect('/en/');
+import HomePage from '../components/HomePage.astro';
+import { localizedPath } from '../i18n';
 ---
+
+<HomePage locale="en" canonical={localizedPath('en')} />
