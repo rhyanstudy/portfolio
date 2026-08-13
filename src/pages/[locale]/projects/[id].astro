@@ -37,6 +37,7 @@ const { project, slug } = Astro.props;
 const t = getTranslations(locale);
 const { Content } = await render(project);
 const { data } = project;
+const hasImplementation = project.body.trim().length > 0;
 
 const allProjects = await getCollection('projects', ({ data: itemData }) => !itemData.draft);
 const alternates = buildContentAlternates(allProjects, slug, 'projects');
@@ -130,12 +131,16 @@ const alternates = buildContentAlternates(allProjects, slug, 'projects');
         )
       }
 
-      <section>
-        <h2>{t.projectDetail.technicalImplementation}</h2>
-        <div class="prose">
-          <Content />
-        </div>
-      </section>
+      {
+        hasImplementation && (
+          <section>
+            <h2>{t.projectDetail.technicalImplementation}</h2>
+            <div class="prose">
+              <Content />
+            </div>
+          </section>
+        )
+      }
 
       {
         data.challenges && data.challenges.length > 0 && (

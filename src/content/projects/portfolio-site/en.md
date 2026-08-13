@@ -18,11 +18,9 @@ technicalDecisions:
   - "Chose Astro for static generation and minimal JavaScript"
   - "Used Content Collections with Zod schemas for type-safe frontmatter"
   - "Plain CSS with design tokens instead of utility frameworks"
-github: "https://github.com/alexmorgan/portfolio"
+github: "https://github.com/rhyanstudy/portfolio"
 featured: false
 draft: false
 ---
 
-## Technical Implementation
-
-The site uses Astro Content Collections for projects and articles. Each project is a Markdown file with structured frontmatter covering problem, solution, and technical decisions. Pages are server-rendered at build time with no client-side framework.
+The site uses Astro Content Collections for projects and articles. Each project is a Markdown file with structured frontmatter covering problem, solution, and technical decisions. Pages are rendered at build time with no client-side framework.

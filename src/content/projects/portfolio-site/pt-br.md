@@ -23,6 +23,4 @@ featured: false
 draft: false
 ---
 
-## Implementação Técnica
-
 O site usa Astro Content Collections para projetos e artigos. Cada projeto é um arquivo Markdown com frontmatter estruturado cobrindo problema, solução e decisões técnicas. Páginas são renderizadas em build time sem framework client-side.
