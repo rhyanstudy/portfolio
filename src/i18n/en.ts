@@ -252,7 +252,7 @@ export const en: Translations = {
       languages: ['Java', 'Python', 'JavaScript', 'TypeScript'],
       backend: ['Spring Boot', 'MySQL'],
       frontend: ['React', 'Tailwind CSS', 'Astro', 'HTML/CSS'],
-      tools: ['Git/GitHub', 'Streamlit', 'Power Automate', 'Power Apps', 'Trello'],
+      tools: ['Git/GitHub', 'Streamlit', 'Power Automate', 'Power Apps', 'Trello', 'Docker'],
       practices: [
         'Agile Methodologies (Kanban/Scrum)',
         'Version Control (Git Flow)',
