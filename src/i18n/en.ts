@@ -20,7 +20,7 @@ export const en: Translations = {
       'Software projects for the public sector, healthcare management, and process automation.',
     notesTitle: 'Notes — Rhyan Magalhães',
     notesDescription:
-      'Technical notes on software engineering, architecture, and applying technology in practice.',
+      'Technical notes on software development, trends, and problem-solving in daily life.',
   },
   nav: {
     about: 'About',
@@ -128,7 +128,7 @@ export const en: Translations = {
     label: 'Publication',
     title: 'Notes',
     description:
-      'Technical writing on architecture, backend development, and engineering practice.',
+      'Technical writing on software development, trends, and problem-solving in daily life.',
   },
   articleDetail: {
     published: 'Published',

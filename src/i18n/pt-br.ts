@@ -20,7 +20,7 @@ export const ptBr: Translations = {
       'Projetos de software para o setor público, gestão de saúde e automação de processos.',
     notesTitle: 'Notas — Rhyan Magalhães',
     notesDescription:
-      'Notas técnicas sobre engenharia de software, arquitetura e aplicação de tecnologia.',
+      'Notas técnicas sobre desenvolvimento de software, tendências e soluções de problemas no dia a dia.',
   },
   nav: {
     about: 'Sobre',
@@ -128,7 +128,7 @@ export const ptBr: Translations = {
     label: 'Publicação',
     title: 'Notas',
     description:
-      'Escrita técnica sobre arquitetura, desenvolvimento backend e prática de engenharia.',
+      'Notas técnicas sobre desenvolvimento de software, tendências e soluções de problemas no dia a dia.',
   },
   articleDetail: {
     published: 'Publicado',
@@ -142,7 +142,7 @@ export const ptBr: Translations = {
   },
   site: {
     label: 'ENGENHARIA DA COMPUTAÇÃO · DESENVOLVIMENTO DE SOFTWARE',
-    headline: 'Proporcionando soluções de problemas através da criatividade.',
+    headline: 'Construindo soluções de problemas através da criatividade.',
     intro:
       'Sou um desenvolvedor com foco em backend e na construção de soluções robustas e testáveis. Utilizo a engenharia de software para otimizar processos e facilitar a vida das pessoas, seja estruturando sistemas de gestão pública ou criando aplicações sob demanda.',
     about: {
